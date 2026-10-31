@@ -154,7 +154,8 @@ with right:
 # Fit models when the user clicks the button; retain results across reruns
 # ---------------------------------------------------------------------
 if run_button or "dashboard_results" not in st.session_state:
-    if y.min() == y.max() or len(np.unique(y)) != 2:
+    observed_classes = set(np.asarray(y).astype(str).tolist())
+    if len(y) == 0 or observed_classes != {"Bipolar", "Control"}:
         st.error("The dataset must contain both Bipolar and Control classes.")
         st.stop()
 
