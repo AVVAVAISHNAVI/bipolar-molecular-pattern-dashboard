@@ -1,38 +1,37 @@
-# Bipolar Molecular Pattern ML Dashboard — Expo Package
+# Bipolar Molecular Pattern ML Dashboard
 
-## What's included
-- `app.py` — Streamlit ML dashboard
-- `GSE124326_count_matrix.txt` — supplied gene-level RNA-seq count matrix
-- `sample_metadata.csv` — verified diagnosis metadata (480 samples)
+A Streamlit research dashboard for exploratory classification of Bipolar vs Control samples using processed RNA-seq-derived gene-level count data from NCBI GEO GSE124326.
+
+## Included files
+- `app.py` — Streamlit dashboard application
+- `GSE124326_preprocessed.npz` — compact, preprocessed 480-sample by 17,802-feature matrix with labels and gene IDs
+- `sample_metadata.csv` — matched sample-level diagnosis metadata
+- `GSE124326_count_matrix.txt` — original public gene-level count matrix (retained for reproducibility)
 - `requirements.txt` — Python dependencies
-- `run_dashboard.command` — Mac launcher
-- `heldout_test_model_comparison.csv` — metrics recalculated from the supplied files
-- `five_fold_cv_training_results.csv` — 5-fold CV results on the training partition
-- `heldout_test_predictions.csv` — held-out test predictions for all three models
 
-## Run on macOS
-1. Extract this ZIP.
-2. Open Terminal and `cd` into the extracted folder.
-3. Run `python3 -m pip install -r requirements.txt`.
-4. Run `python3 -m streamlit run app.py`.
-5. Open the local URL printed by Streamlit (usually http://localhost:8501).
+## Run locally
+```bash
+python3 -m venv .venv
+source .venv/bin/activate
+python -m pip install -r requirements.txt
+python -m streamlit run app.py
+```
 
-You can also double-click `run_dashboard.command`; macOS may require allowing it in Privacy & Security, or run it from Terminal.
+## Streamlit Community Cloud deployment
+Repository: `AVVAVAISHNAVI/bipolar-molecular-pattern-dashboard`
+Branch: `main`
+Main file: `app.py`
 
-The dashboard automatically loads the included dataset and metadata when no replacement uploads are selected. Click **Run analysis**.
+The dashboard loads `GSE124326_preprocessed.npz` by default, so users do not need to upload the large count matrix during the demo. The app fits three pipelines, reports a held-out test comparison, performs five-fold cross-validation on the training partition, shows ROC/confusion matrix/selected statistical features, and supports prediction on a compatible new count matrix.
 
-## Verified input details
-- Count matrix: 57,820 genes × 480 samples (plus gene-ID column)
-- Metadata: 480 rows; 240 Bipolar and 240 Control
-- Matched sample IDs: 480/480
-- Low-expression filter: count >= 10 in at least 10% of samples
-- Retained genes after filtering: 17,802
-- Normalization: CPM followed by log2(CPM + 1)
-- Hold-out split: stratified 80:20 (384 train, 96 test)
-- Feature selection: SelectKBest with ANOVA F-test, k=500; fit within training folds
+## Data processing represented in the preprocessed file
+- 480 samples: 240 Bipolar and 240 Control
+- 57,820 original gene rows
+- Filter genes with count >= 10 in at least 10% of samples
+- 17,802 genes retained
+- Per-sample CPM normalization
+- log2(CPM + 1) transformation
+- 500 ANOVA F-test-selected features are selected within training folds by the dashboard pipeline
 
-## Scientific / clinical limitations
-The input is a processed gene-level RNA-seq count matrix, not raw FASTQ reads or direct k-mer sequence features. This is an exploratory molecular/gene-expression classification prototype, not a clinically validated diagnostic system. Selected statistical features are not validated biomarkers. Do not use predictions for medical decisions.
-
-## Reproducibility
-The application follows the Colab model settings: SVM with RBF kernel and probability estimates; Random Forest with 200 trees and balanced class weights; Logistic Regression with max_iter=1000. Random seed is 42 by default. The dashboard recalculates metrics and also runs 5-fold cross-validation on the training partition.
+## Scientific and ethical limitations
+The uploaded file is a processed gene-level RNA-seq count matrix, not raw FASTQ reads. The dashboard is an exploratory research prototype, not a medical diagnostic system. Statistical feature ranking does not by itself establish a validated biomarker or biological cause. Results require independent cohort validation and biological interpretation.
