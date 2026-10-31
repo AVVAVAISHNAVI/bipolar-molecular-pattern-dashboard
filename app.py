@@ -159,8 +159,8 @@ if run_button or "dashboard_results" not in st.session_state:
         st.error("The dataset must contain both Bipolar and Control classes.")
         st.stop()
 
-    X_train, X_test, y_train, y_test = train_test_split(
-        X, y,
+    X_train, X_test, y_train, y_test, sample_names_train, sample_names_test = train_test_split(
+        X, y, sample_names,
         test_size=float(test_fraction),
         random_state=int(random_state),
         stratify=y
@@ -224,6 +224,7 @@ if run_button or "dashboard_results" not in st.session_state:
         "X_test": X_test,
         "y_train": y_train,
         "y_test": y_test,
+        "sample_names_test": sample_names_test,
         "models": fitted_models,
         "predictions": predictions,
         "probabilities": probabilities,
@@ -333,8 +334,8 @@ with tab2:
     plt.close(fig)
 
     pred_export = pd.DataFrame({
-        "Sample": results["y_test"].index,
-        "Actual_Diagnosis": results["y_test"].values,
+        "Sample": results["sample_names_test"],
+        "Actual_Diagnosis": results["y_test"],
         "Predicted_Diagnosis": pred,
         "Bipolar_probability": prob
     })
